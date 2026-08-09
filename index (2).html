@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Digital Hamper</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Indie+Flower&family=Patrick+Hand&display=swap');
+
+        :root {
+            --bg-paper: #f9f5eb;
+            --text-ink: #3b3a36;
+            --accent-warm: #d4a373;
+            --tape-color: rgba(255, 250, 205, 0.6);
+            --polaroid-bg: #fdfbf7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            background-color: var(--bg-paper);
+            color: var(--text-ink);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* Whimsical Fireflies / Dust */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInSoft 2.5s ease-in forwards;
+        }
+
+        h1 {
+            font-family: 'Indie Flower', cursive;
+            font-size: 5rem;
+            color: #b56576;
+            margin-bottom: 1rem;
+            transform: rotate(-2deg);
+        }
+
+        .subtitle {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.8rem;
+            color: #6d6875;
+        }
+
+        section {
+            padding: 80px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Indie Flower', cursive;
+            font-size: 3.5rem;
+            color: #e5989b;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .section-title::after {
+            content: '✨';
+            position: absolute;
+            right: -40px;
+            top: -10px;
+            font-size: 2rem;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        /* Notebook Letter Section */
+        .letter-container {
+            background: #fff;
+            background-image: repeating-linear-gradient(transparent, transparent 29px, #add8e6 30px);
+            background-attachment: local;
+            border-radius: 5px;
+            padding: 40px 40px 40px 60px;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.08);
+            position: relative;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.4rem;
+            line-height: 30px; /* matches the line grid */
+            color: #2b2b2b;
+            transform: rotate(1deg);
+        }
+        /* Red margin line */
+        .letter-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 40px;
+            width: 2px;
+            background: rgba(255, 105, 180, 0.4);
+        }
+        /* Tape on notebook */
+        .tape {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 120px;
+            height: 30px;
+            background: var(--tape-color);
+            transform: translateX(-50%) rotate(-3deg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px);
+        }
+        
+        .letter-date {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #777;
+        }
+        .letter-content {
+            text-align: left;
+        }
+        .letter-content p {
+            margin-bottom: 15px;
+        }
+
+        /* Hand-drawn Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            background: repeating-linear-gradient(to bottom, #d4a373, #d4a373 10px, transparent 10px, transparent 20px);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+        }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
+        
+        .timeline-item::after {
+            content: '⭐';
+            position: absolute;
+            font-size: 1.5rem;
+            right: -15px;
+            top: 35px;
+            z-index: 1;
+            background: var(--bg-paper);
+        }
+        .timeline-item:nth-child(even)::after {
+            left: -15px;
+        }
+
+        .timeline-content {
+            padding: 20px;
+            background: #fff;
+            border: 2px dashed #d4a373;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .timeline-content:hover {
+            transform: rotate(-2deg) scale(1.02);
+        }
+        .timeline-content h3 {
+            font-family: 'Indie Flower', cursive;
+            color: #b56576;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .timeline-content a {
+            color: #7289da;
+            text-decoration: underline wavy #e5989b;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-family: 'Courier Prime', monospace;
+        }
+        .timeline-content p {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        /* Polaroid Gallery */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 20px;
+        }
+        .polaroid {
+            background: var(--polaroid-bg);
+            padding: 15px 15px 50px 15px;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.15);
+            width: 320px;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* Masking tape for polaroids */
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            width: 100px;
+            height: 25px;
+            background: var(--tape-color);
+            transform: translateX(-50%) rotate(2deg);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        .polaroid:nth-child(1) { transform: rotate(-4deg); }
+        .polaroid:nth-child(2) { transform: rotate(3deg) translateY(20px); }
+        .polaroid:nth-child(3) { transform: rotate(-2deg); }
+        
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0);
+            z-index: 10;
+        }
+        .polaroid img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: sepia(0.2) contrast(0.95);
+        }
+        .polaroid p {
+            color: #3b3a36;
+            text-align: center;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.3rem;
+            margin-top: 15px;
+            line-height: 1.2;
+        }
+
+        /* Gift Card */
+        .gift-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gift-card {
+            max-width: 450px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 10px solid #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transform: rotate(2deg);
+            animation: gentleFloat 5s ease-in-out infinite;
+        }
+        .gift-card img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Animations */
+        @keyframes fadeInSoft {
+            from { opacity: 0; filter: blur(5px); }
+            to { opacity: 1; filter: blur(0); }
+        }
+        @keyframes gentleFloat {
+            0% { transform: translateY(0px) rotate(2deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(2deg); }
+        }
+        @keyframes twinkle {
+            from { opacity: 0.4; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Scroll Down Indicator */
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: #d4a373;
+            animation: bounceSoft 2s infinite;
+        }
+        @keyframes bounceSoft {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-15px) translateX(-50%); }
+            60% { transform: translateY(-7px) translateX(-50%); }
+        }
+
+        @media screen and (max-width: 768px) {
+            .timeline::after { left: 30px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; text-align: left !important; }
+            .timeline-item:nth-child(even) { left: 0%; }
+            .timeline-item::after { left: 22px; right: auto; top: 30px; }
+            .timeline-item:nth-child(even)::after { left: 22px; }
+            h1 { font-size: 3.5rem; }
+            .letter-container { padding: 30px 20px 30px 40px; }
+            .letter-container::before { left: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>A Memorable Day</h1>
+            <p class="subtitle">A digital scrapbook of little moments.</p>
+            <div class="scroll-down">↓</div>
+        </header>
+
+        <section id="note" class="fade-section">
+            <h2 class="section-title">A Little Note</h2>
+            <div class="letter-container">
+                <div class="tape"></div>
+                <div class="letter-date">8th August 2026</div>
+                <div class="letter-content">
+                    <p>Not gonna write much here. But it was a wonderful day. The train, watching Spider-Man Brand New Day with you, then going out to eat with you, buying plushies and stuff. I loved it all.</p>
+                    <p>This is my first legitimate date, and it was a great experience for me to remember (I just wished I didn't have to bring my cane with me). I enjoyed it a lot, I hope you did too.</p>
+                    <p style="text-align:center; font-family:'Indie Flower', cursive; font-size: 2.2rem; color: #b56576; margin-top:20px; transform: rotate(-2deg);">Thank you SO SO much.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="journey" class="fade-section">
+            <h2 class="section-title">Our Path</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>DN Regalia Mall</h3>
+                        <a href="https://maps.app.goo.gl/cFCnipLM5KGhVHKd9" target="_blank">📍 View on Map</a>
+                        <p>"I liked sitting with you and eating (being fed I mean). I was happy that you were enjoying"</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>INOX BMC Bhawani Mall</h3>
+                        <a href="https://maps.app.goo.gl/sVZrWo9fVoCqWSF59" target="_blank">📍 View on Map</a>
+                        <p>"I very much liked the movie, and I really enjoyed watching it with you. Thank You, I have my first ever theater memorable now"</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Utkal Kanika Galleria</h3>
+                        <a href="https://maps.app.goo.gl/oFLkiMUxmmPWKAVU8" target="_blank">📍 View on Map</a>
+                        <p>"Wanted to explore this place. I liked the chandeliers on the top, and I'm glad you got your plushies and your 'about to be' gym bottle"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="memories" class="fade-section">
+            <h2 class="section-title">Captured Moments</h2>
+            <div class="gallery">
+                <div class="polaroid">
+                    <img src="https://jbffxjpmlisbyzsgmaho.supabase.co/storage/v1/object/public/care-media/TL1cBpq8Z1CorK87.jpg" alt="Memory 1">
+                    <p>I like this pic. Kinda perfect for a soft launc (not implying a soft launch or anything else, at all)</p>
+                </div>
+                <div class="polaroid">
+                    <img src="https://jbffxjpmlisbyzsgmaho.supabase.co/storage/v1/object/public/care-media/hbKiLVkDEeZDKDva.jpg" alt="Theatre">
+                    <p>theatre</p>
+                </div>
+                <div class="polaroid">
+                    <img src="https://jbffxjpmlisbyzsgmaho.supabase.co/storage/v1/object/public/care-media/o3ZOi2Q9sooCrrB.png" alt="Drawing">
+                    <p>the "excuse me, sorry to take your time" was the "gali guli mat dena"</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gift" class="fade-section">
+            <h2 class="section-title">A Little Something</h2>
+            <div class="gift-section">
+                <div class="gift-card">
+                    <img src="https://files.catbox.moe/dlztst.png" alt="Gift Card">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Whimsical Fireflies / Dust particles
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        class Firefly {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.baseAlpha = Math.random() * 0.5 + 0.1;
+                this.pulse = Math.random() * 0.05;
+                this.pulseDir = 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                // Sway motion
+                this.x += Math.sin(Date.now() / 1000 + this.y) * 0.3;
+
+                // Pulsing light
+                this.baseAlpha += this.pulse * this.pulseDir;
+                if(this.baseAlpha >= 0.8 || this.baseAlpha <= 0.1) {
+                    this.pulseDir *= -1;
+                }
+                
+                if (this.x > width) this.x = 0;
+                if (this.x < 0) this.x = width;
+                if (this.y > height) this.y = 0;
+                if (this.y < 0) this.y = height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(212, 163, 115, ${this.baseAlpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            particles = [];
+            let numParticles = (width * height) / 12000; 
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Firefly());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        
+        initParticles();
+        animate();
+
+        // Scroll Intersection Observer for whimsical fade-ins
+        const sections = document.querySelectorAll('.fade-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        sections.forEach(sec => observer.observe(sec));
+    </script>
+</body>
+</html>
